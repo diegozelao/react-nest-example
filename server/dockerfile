@@ -1,0 +1,34 @@
+# FROM node:20-alpine
+FROM node:20-alpine3.17
+# FROM node:16.14-alpine\
+
+####
+RUN mkdir -p /usr/src/app/node_modules
+# RUN chown -R node:node /usr/src
+# USER node
+
+WORKDIR /usr/src/app
+
+
+COPY package*.json ./
+COPY tsconfig*.json ./
+
+# # ENV NODE_ENV=development
+
+RUN npm i -g @nestjs/cli
+RUN npm install --omit=dev
+
+
+RUN npm install
+RUN npm run build
+RUN npm cache clean --force
+RUN mv node_modules ../
+COPY . .
+
+EXPOSE 3000
+CMD [ "npm", "run", "start:prod" ]
+
+######
+# CMD [ "cd .. && rm -rf node_modules" ]
+# RUN cd ..
+# RUN rm -rf node_modules
